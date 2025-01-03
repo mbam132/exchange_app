@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import './utils/constants.dart';
-import 'utils/index.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/index.dart';
 
 class InputAmountRow extends StatelessWidget {
   final String currencySymbol;

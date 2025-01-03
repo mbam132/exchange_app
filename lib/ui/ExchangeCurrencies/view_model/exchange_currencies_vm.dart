@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'package:src/blocs/exchange_rate_bloc_event.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/index.dart';
+import 'package:flutter_debouncer/flutter_debouncer.dart';
+import '../../../blocs/exchange_rate_bloc.dart';
+import '../../../services/exchange_service.dart';
+
+const REQUEST_DEBOUNCE_TIME = 750;
+final Debouncer _debouncer = Debouncer();
+
+class ExchangeCurrenciesVm extends ChangeNotifier {
+  final ExchangeRateBloc bloc;
+
+  ExchangeCurrenciesVm({required this.bloc});
+
+  bool _showExchangeSpinner = false;
+  bool get showExchangeSpinner => _showExchangeSpinner;
+
+  ExchangeService exchangeService = ExchangeService();
+
+  void handleSetNewCurrency(
+      String currencyType, String newCurrencySymbol) async {
+    if (currencyType == 'fiat') {
+      bloc.add(FiatCurrencyChangedEvent(fiatCurrencySymbol: newCurrencySymbol));
+    } else {
+      bloc.add(
+          CryptoCurrencyChangedEvent(cryptoCurrencySymbol: newCurrencySymbol));
+    }
+
+    await handleFetchAndSetExchangeRate();
+  }
+
+  void handleSetInputAmount(double newInputValue) {
+    bloc.add(InputtedAmountChangedEvent(newAmount: newInputValue));
+    if (newInputValue != 0.0) {
+      debouncedFetchAndSetExchangeRate(REQUEST_DEBOUNCE_TIME);
+    }
+  }
+
+  void handleSwitchExchangeType() async {
+    bloc.add(SwitchExchangeTypeEvent());
+
+    await handleFetchAndSetExchangeRate();
+  }
+
+  Future<void> handleFetchAndSetExchangeRate() async {
+    if (bloc.state.inputtedAmount == 0.0) {
+      return;
+    }
+
+    await debouncedFetchAndSetExchangeRate(REQUEST_DEBOUNCE_TIME);
+  }
+
+  Future<void> debouncedFetchAndSetExchangeRate(int durationInMs) async {
+    _debouncer.debounce(
+        duration: Duration(milliseconds: durationInMs),
+        onDebounce: () async {
+          bloc.add(FetchAndSetExchangeRateEvent());
+        });
+  }
+
+  void handleExchange() {
+    _showExchangeSpinner = true;
+    notifyListeners();
+
+    waitToCall(2500, () {
+      _showExchangeSpinner = false;
+      notifyListeners();
+    });
+  }
+
+  String get exchangeAndSymbol {
+    String formattedExchangeRate = formatDouble(bloc.state.exchangeRate);
+    String currencySymbol =
+        bloc.state.exchangeType == ExchangeTypeEnum.fiatCrypto
+            ? bloc.state.cryptoCurrency.symbol
+            : bloc.state.fiatCurrency.symbol;
+
+    return '= $formattedExchangeRate $currencySymbol';
+  }
+
+  String get receivedAmountAndSymbol {
+    String formattedAmount =
+        (bloc.state.inputtedAmount / bloc.state.exchangeRate).isNaN ||
+                (bloc.state.inputtedAmount / bloc.state.exchangeRate).isInfinite
+            ? '0'
+            : (bloc.state.exchangeType == ExchangeTypeEnum.fiatCrypto
+                ? (bloc.state.inputtedAmount / bloc.state.exchangeRate)
+                    .toStringAsPrecision(3)
+                : formatDouble(
+                    bloc.state.inputtedAmount * bloc.state.exchangeRate));
+    String currencySymbol =
+        bloc.state.exchangeType == ExchangeTypeEnum.fiatCrypto
+            ? bloc.state.cryptoCurrency.symbol
+            : bloc.state.fiatCurrency.symbol;
+
+    return '= $formattedAmount $currencySymbol';
+  }
+
+  String get estimatedTime {
+    String amountOfTime = '10 min';
+
+    return "= $amountOfTime";
+  }
+}

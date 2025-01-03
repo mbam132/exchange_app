@@ -39,7 +39,7 @@ final List<Currency> CRYPTO_CURRENCIES = [
       imagePath: 'cripto_currencies/TATUM-TRON-USDT.png')
 ];
 
-final List<String> CURRENCY_TYPES = ['fiat', 'crypto'];
+enum ExchangeTypeEnum { fiatCrypto, cryptoFiat }
 
 const ELDORADO_YELLOW = Color(0xFFFFB200);
 

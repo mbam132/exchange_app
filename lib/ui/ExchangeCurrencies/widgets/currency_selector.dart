@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import './types/index.dart';
-import './utils/constants.dart';
+import '../../../types/index.dart';
+import '../../../utils/constants.dart';
 
 const BOTTOM_MODAL_HEIGHT = 264.0;
 
 class CurrencySelector extends StatelessWidget {
-  final List<Currency> currenciesList;
   final String selectedCurrencySymbol;
   final String indicationText;
   final String typeOfCurrency;
-  final int listNumber;
 
-  final void Function(int, int) handleSetNewCurrency;
+  final void Function(String, String) handleSetNewCurrency;
 
   const CurrencySelector(
       {super.key,
-      required this.currenciesList,
       required this.selectedCurrencySymbol,
       required this.indicationText,
-      required this.typeOfCurrency,
       required this.handleSetNewCurrency,
-      required this.listNumber});
+      required this.typeOfCurrency});
+
+  List<Currency> get currenciesList =>
+      typeOfCurrency == 'fiat' ? FIAT_CURRENCIES : CRYPTO_CURRENCIES;
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +71,8 @@ class CurrencySelector extends StatelessWidget {
                             currenciesList: currenciesList,
                             selectedCurrencySymbol: selectedCurrencySymbol,
                             handleSetNewCurrency: handleSetNewCurrency,
-                            listNumber: listNumber,
-                            bottomModalContext: context))
+                            bottomModalContext: context,
+                            typeOfCurrency: typeOfCurrency))
                   ],
                 ),
               );
@@ -86,23 +85,26 @@ class CurrencySelector extends StatelessWidget {
 class CurrencyItemsSelect extends StatelessWidget {
   final List<Currency> currenciesList;
   final String selectedCurrencySymbol;
-  final int listNumber;
   final BuildContext bottomModalContext;
 
-  final void Function(int, int) handleSetNewCurrency;
+  final String typeOfCurrency;
+
+  final void Function(String, String) handleSetNewCurrency;
 
   const CurrencyItemsSelect(
       {super.key,
       required this.currenciesList,
       required this.selectedCurrencySymbol,
       required this.handleSetNewCurrency,
-      required this.listNumber,
-      required this.bottomModalContext});
+      required this.bottomModalContext,
+      required this.typeOfCurrency});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: currenciesList.length,
+      itemCount: typeOfCurrency == 'fiat'
+          ? FIAT_CURRENCIES.length
+          : CRYPTO_CURRENCIES.length,
       itemBuilder: (context, index) {
         return CheckboxListTile(
             value: index ==
@@ -116,8 +118,11 @@ class CurrencyItemsSelect extends StatelessWidget {
                 return;
               }
 
+              String newCurrencySymbol = currenciesList[index].symbol;
               if (newValue != null) {
-                handleSetNewCurrency(listNumber, index);
+                // handleSetNewCurrency(type)
+
+                handleSetNewCurrency(typeOfCurrency, newCurrencySymbol);
               }
 
               //close the modal
