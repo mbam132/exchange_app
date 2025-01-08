@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:src/blocs/exchange_rate_bloc_event.dart';
+import 'package:flutter_debouncer/flutter_debouncer.dart';
+import '../../../blocs/exchange_rate_bloc_event.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/index.dart';
-import 'package:flutter_debouncer/flutter_debouncer.dart';
 import '../../../blocs/exchange_rate_bloc.dart';
-import '../../../services/exchange_service.dart';
-
-const REQUEST_DEBOUNCE_TIME = 750;
-final Debouncer _debouncer = Debouncer();
 
 class ExchangeCurrenciesVm extends ChangeNotifier {
   final ExchangeRateBloc bloc;
+
+  final Debouncer _debouncer = Debouncer();
+  const REQUEST_DEBOUNCE_TIME = 750;
 
   ExchangeCurrenciesVm({required this.bloc});
 
   bool _showExchangeSpinner = false;
   bool get showExchangeSpinner => _showExchangeSpinner;
-
-  ExchangeService exchangeService = ExchangeService();
 
   void handleSetNewCurrency(
       String currencyType, String newCurrencySymbol) async {
@@ -64,7 +61,8 @@ class ExchangeCurrenciesVm extends ChangeNotifier {
     _showExchangeSpinner = true;
     notifyListeners();
 
-    waitToCall(2500, () {
+    int msToWait = 2500;
+    waitToCall(msToWait, () {
       _showExchangeSpinner = false;
       notifyListeners();
     });

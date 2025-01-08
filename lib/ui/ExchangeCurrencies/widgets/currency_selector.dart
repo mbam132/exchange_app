@@ -129,7 +129,7 @@ class CurrencyItemsSelect extends StatelessWidget {
               Navigator.pop(bottomModalContext);
             },
             title: Row(children: [
-              Image.asset(currenciesList[index].imagePath,
+              Image.asset("assets/${currenciesList[index].imagePath}",
                   height: 25, width: 25),
               SizedBox(width: 8),
               Container(

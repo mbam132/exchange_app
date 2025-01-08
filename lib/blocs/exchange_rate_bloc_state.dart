@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../types/index.dart';
 import '../utils/constants.dart';
 
@@ -22,8 +23,6 @@ class ExchangeRateState {
       required this.inputtedAmount});
 
   factory ExchangeRateState.initial() {
-    // TODO: add the fetching of crypto and fiat currencies
-
     return ExchangeRateState(
         receivedAmount: 0.0,
         cryptoCurrenciesList: CRYPTO_CURRENCIES,
@@ -54,4 +53,30 @@ class ExchangeRateState {
         exchangeRate: exchangeRate ?? this.exchangeRate,
         inputtedAmount: inputtedAmount ?? this.inputtedAmount);
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ExchangeRateState &&
+        other.receivedAmount == receivedAmount &&
+        listEquals(other.cryptoCurrenciesList, cryptoCurrenciesList) &&
+        listEquals(other.fiatCurrenciesList, fiatCurrenciesList) &&
+        other.cryptoCurrency == cryptoCurrency &&
+        other.fiatCurrency == fiatCurrency &&
+        other.exchangeType == exchangeType &&
+        other.exchangeRate == exchangeRate &&
+        other.inputtedAmount == inputtedAmount;
+  }
+
+  @override
+  int get hashCode =>
+      receivedAmount.hashCode ^
+      cryptoCurrenciesList.hashCode ^
+      fiatCurrenciesList.hashCode ^
+      cryptoCurrency.hashCode ^
+      fiatCurrency.hashCode ^
+      exchangeType.hashCode ^
+      exchangeRate.hashCode ^
+      inputtedAmount.hashCode;
 }

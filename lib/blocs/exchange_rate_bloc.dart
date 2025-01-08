@@ -4,11 +4,15 @@ import './exchange_rate_bloc_state.dart';
 import '../utils/constants.dart';
 import '../types/index.dart';
 import '../repositories/exchange_repo.dart';
-
-ExchangeRepository exchangeRepo = ExchangeRepository();
+import 'package:http/http.dart' as http;
 
 class ExchangeRateBloc extends Bloc<ExchangeRateEvent, ExchangeRateState> {
-  ExchangeRateBloc() : super(ExchangeRateState.initial()) {
+  late ExchangeRepository _exchangeRepo;
+  final http.Client client;
+
+  ExchangeRateBloc(this.client) : super(ExchangeRateState.initial()) {
+    _exchangeRepo = ExchangeRepository(client);
+
     on<InputtedAmountChangedEvent>((event, emit) {
       emit(state.copyWith(inputtedAmount: event.newAmount));
     });
@@ -19,7 +23,7 @@ class ExchangeRateBloc extends Bloc<ExchangeRateEvent, ExchangeRateState> {
       emit(state.copyWith(fiatCurrency: newFiatCurrency));
     });
     on<CryptoCurrencyChangedEvent>((event, emit) {
-      Currency newCryptoCurrency = FIAT_CURRENCIES.firstWhere(
+      Currency newCryptoCurrency = CRYPTO_CURRENCIES.firstWhere(
           (cryptoCurrency) =>
               cryptoCurrency.symbol == event.cryptoCurrencySymbol);
 
@@ -51,7 +55,7 @@ class ExchangeRateBloc extends Bloc<ExchangeRateEvent, ExchangeRateState> {
       };
 
       double? newExchangeRate =
-          await exchangeRepo.fetchExchangeRate(queryParams);
+          await _exchangeRepo.fetchExchangeRate(queryParams);
 
       if (newExchangeRate != null) {
         emit(state.copyWith(exchangeRate: newExchangeRate));
