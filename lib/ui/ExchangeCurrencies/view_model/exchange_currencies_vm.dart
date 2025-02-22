@@ -9,7 +9,7 @@ class ExchangeCurrenciesVm extends ChangeNotifier {
   final ExchangeRateBloc bloc;
 
   final Debouncer _debouncer = Debouncer();
-  const REQUEST_DEBOUNCE_TIME = 750;
+  final REQUEST_DEBOUNCE_TIME = 750;
 
   ExchangeCurrenciesVm({required this.bloc});
 
