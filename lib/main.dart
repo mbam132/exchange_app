@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:src/utils/constants.dart';
 import './ui/ExchangeCurrencies/index.dart';
 
 void main() {
@@ -10,7 +11,15 @@ final GoRouter _router = GoRouter(routes: <RouteBase>[
   GoRoute(
     path: "/",
     builder: (BuildContext context, GoRouterState state) {
-      return const ExchangeCurrencies();
+      return Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: null,
+          body: Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: const AssetImage(BACKGROUND_IMAGE_PATH),
+                      fit: BoxFit.cover)),
+              child: const ExchangeCurrencies()));
     },
   ),
   // GoRoute(
