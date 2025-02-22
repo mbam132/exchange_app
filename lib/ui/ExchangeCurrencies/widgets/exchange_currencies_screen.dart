@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:src/widgets/EDButton.dart';
 import '../../../utils/constants.dart';
 import '../view_model/exchange_currencies_vm.dart';
 import '../../../blocs/exchange_rate_bloc.dart';
@@ -33,114 +34,77 @@ class _ExchangeCurrencies extends State<ExchangeCurrenciesScreen> {
     setState(() {});
   }
 
+  Widget infoRow({description, value}) {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(22, 1, 22, 0),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(description),
+          Text(value),
+        ]));
+  }
+
+  Widget exchangeButtonRow() {
+    return Stack(alignment: Alignment.center, children: [
+      EDButton(
+        text: "Cambiar",
+        pressHandle: widget.viewModel.handleExchange,
+      ),
+      if (widget.viewModel.showExchangeSpinner)
+        Positioned(
+          right: 110,
+          top: 12,
+          child: SpinKitRotatingCircle(color: ELDORADO_YELLOW, size: 20),
+        )
+    ]);
+  }
+
+  List<Widget> cardColumnItems({state}) {
+    return [
+      CurrenciesRow(
+        typeOfExchange: state.exchangeType,
+        switchExchangeType: widget.viewModel.handleSwitchExchangeType,
+        handleSetNewCurrency: widget.viewModel.handleSetNewCurrency,
+        fiatCurrency: state.fiatCurrency,
+        cryptoCurrency: state.cryptoCurrency,
+      ),
+      InputAmountRow(
+          currencySymbol: state.exchangeType == ExchangeTypeEnum.fiatCrypto
+              ? state.fiatCurrency.symbol
+              : state.cryptoCurrency.symbol,
+          inputAmount: state.inputtedAmount,
+          handleSetInputAmount: widget.viewModel.handleSetInputAmount),
+      infoRow(
+          description: "Tasa estimada",
+          value: widget.viewModel.exchangeAndSymbol),
+      infoRow(
+          description: "Recibirás",
+          value: widget.viewModel.receivedAmountAndSymbol),
+      infoRow(
+          description: "Tiempo estimado",
+          value: widget.viewModel.estimatedTime),
+      exchangeButtonRow()
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: null,
-      body: BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
-          // buildWhen: (){
-          // return true/false to determine whether or not
-          // to rebuild the widget with state
-          // },
-          builder: (context, state) {
-        return Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: const AssetImage(BACKGROUND_IMAGE_PATH),
-                    fit: BoxFit.cover)),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                      width: EXCHANGE_CARD_WIDTH,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Column(children: [
-                        CurrenciesRow(
-                          typeOfExchange: state.exchangeType,
-                          switchExchangeType:
-                              widget.viewModel.handleSwitchExchangeType,
-                          handleSetNewCurrency:
-                              widget.viewModel.handleSetNewCurrency,
-                          fiatCurrency: state.fiatCurrency,
-                          cryptoCurrency: state.cryptoCurrency,
-                        ),
-                        InputAmountRow(
-                            currencySymbol: state.exchangeType ==
-                                    ExchangeTypeEnum.fiatCrypto
-                                ? state.fiatCurrency.symbol
-                                : state.cryptoCurrency.symbol,
-                            inputAmount: state.inputtedAmount,
-                            handleSetInputAmount:
-                                widget.viewModel.handleSetInputAmount),
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(22, 6, 22, 0),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Tasa estimada"),
-                                  Text(widget.viewModel.exchangeAndSymbol),
-                                ])),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(22, 0, 22, 0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Recibirás"),
-                                Text(widget.viewModel.receivedAmountAndSymbol)
-                              ]),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(22, 0, 22, 6),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Tiempo estimado"),
-                                  Text(widget.viewModel.estimatedTime),
-                                ])),
-                        Stack(alignment: Alignment.center, children: [
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                            width: double.infinity,
-                            height: 35,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextButton(
-                                  onPressed: widget.viewModel.handleExchange,
-                                  style: TextButton.styleFrom(
-                                      backgroundColor: ELDORADO_YELLOW,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            10.0), // Adjust the radius as needed
-                                      )),
-                                  child: const Text(
-                                    "Cambiar",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (widget.viewModel.showExchangeSpinner)
-                            Positioned(
-                              right: 110,
-                              top: 12,
-                              child: SpinKitRotatingCircle(
-                                  color: ELDORADO_YELLOW, size: 20),
-                            )
-                        ]),
-                      ]))
-                ],
-              ),
-            ));
-      }), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+    return BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
+        builder: (context, state) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+                padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                width: EXCHANGE_CARD_WIDTH,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Column(children: cardColumnItems(state: state)))
+          ],
+        ),
+      );
+    }); // This trailing comma makes auto-formatting nicer for build methods.
   }
 }
