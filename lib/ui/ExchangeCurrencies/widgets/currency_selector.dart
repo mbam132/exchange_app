@@ -6,7 +6,7 @@ const BOTTOM_MODAL_HEIGHT = 264.0;
 
 class CurrencySelector extends StatelessWidget {
   final String selectedCurrencySymbol;
-  final String indicationText;
+  final String elevatedText;
   final String typeOfCurrency;
 
   final void Function(String, String) handleSetNewCurrency;
@@ -14,7 +14,7 @@ class CurrencySelector extends StatelessWidget {
   const CurrencySelector(
       {super.key,
       required this.selectedCurrencySymbol,
-      required this.indicationText,
+      required this.elevatedText,
       required this.handleSetNewCurrency,
       required this.typeOfCurrency});
 
@@ -36,10 +36,12 @@ class CurrencySelector extends StatelessWidget {
               width: 80,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
                   border: Border(
                       left: BorderSide(color: ELDORADO_YELLOW, width: 2.0),
-                      right: BorderSide(color: ELDORADO_YELLOW, width: 2.0))),
+                      right: BorderSide(color: ELDORADO_YELLOW, width: 2.0),
+                      top: BorderSide(color: Colors.transparent, width: 2.0),
+                      bottom:
+                          BorderSide(color: Colors.transparent, width: 2.0))),
               child: Text(
                 selectedCurrencySymbol,
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -47,7 +49,7 @@ class CurrencySelector extends StatelessWidget {
           Positioned(
               top: 3,
               child: Text(
-                indicationText.toUpperCase(),
+                elevatedText.toUpperCase(),
                 style: TextStyle(fontSize: 8),
               ))
         ]),
@@ -63,7 +65,7 @@ class CurrencySelector extends StatelessWidget {
                     Padding(
                         padding: EdgeInsets.only(top: 8),
                         child: Text(
-                          indicationText.toUpperCase(),
+                          elevatedText.toUpperCase(),
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )),
                     Expanded(

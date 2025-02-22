@@ -41,7 +41,7 @@ class CurrenciesRow extends StatelessWidget {
                     typeOfExchange == ExchangeTypeEnum.fiatCrypto
                         ? fiatCurrency.symbol
                         : cryptoCurrency.symbol,
-                indicationText: 'Tengo',
+                elevatedText: 'Tengo',
                 typeOfCurrency: typeOfExchange == ExchangeTypeEnum.fiatCrypto
                     ? 'fiat'
                     : 'crypto',
@@ -52,7 +52,7 @@ class CurrenciesRow extends StatelessWidget {
                     typeOfExchange == ExchangeTypeEnum.cryptoFiat
                         ? fiatCurrency.symbol
                         : cryptoCurrency.symbol,
-                indicationText: "Quiero",
+                elevatedText: "Quiero",
                 typeOfCurrency: typeOfExchange == ExchangeTypeEnum.cryptoFiat
                     ? 'fiat'
                     : 'crypto',
