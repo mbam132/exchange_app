@@ -7,6 +7,7 @@ import '../view_model/exchange_currencies_vm.dart';
 import '../../../blocs/exchange_rate_bloc.dart';
 import '../../../blocs/exchange_rate_bloc_state.dart';
 import 'input_amount_row.dart';
+import 'package:go_router/go_router.dart';
 import 'currencies_row.dart';
 
 class ExchangeCurrenciesScreen extends StatefulWidget {
@@ -59,7 +60,18 @@ class _ExchangeCurrencies extends State<ExchangeCurrenciesScreen> {
     ]);
   }
 
-  List<Widget> cardColumnItems({state}) {
+  Widget checkHistoryRow(BuildContext context) {
+    return Stack(alignment: Alignment.center, children: [
+      EDButton(
+        text: "Ver historia",
+        pressHandle: () async {
+          context.push('/exchange-history');
+        },
+      ),
+    ]);
+  }
+
+  List<Widget> cardColumnItems({state, context}) {
     return [
       CurrenciesRow(
         typeOfExchange: state.exchangeType,
@@ -83,12 +95,13 @@ class _ExchangeCurrencies extends State<ExchangeCurrenciesScreen> {
       infoRow(
           description: "Tiempo estimado",
           value: widget.viewModel.estimatedTime),
-      exchangeButtonRow()
+      exchangeButtonRow(),
+      checkHistoryRow(context)
     ];
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context1) {
     return BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
         builder: (context, state) {
       return Center(
@@ -97,11 +110,12 @@ class _ExchangeCurrencies extends State<ExchangeCurrenciesScreen> {
           children: <Widget>[
             Container(
                 padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                width: EXCHANGE_CARD_WIDTH,
+                width: CARD_WIDTH,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20)),
-                child: Column(children: cardColumnItems(state: state)))
+                child: Column(
+                    children: cardColumnItems(state: state, context: context1)))
           ],
         ),
       );

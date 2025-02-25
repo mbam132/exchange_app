@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_debouncer/flutter_debouncer.dart';
-import '../../../blocs/exchange_rate_bloc_event.dart';
-import '../../../utils/constants.dart';
-import '../../../utils/index.dart';
-import '../../../blocs/exchange_rate_bloc.dart';
+import 'package:src/db/index.dart';
+import 'package:src/db/types.dart';
+import 'package:src/blocs/exchange_rate_bloc_event.dart';
+import 'package:src/blocs/exchange_rate_bloc.dart';
+import 'package:src/utils/constants.dart';
+import 'package:src/utils/index.dart';
 
 class ExchangeCurrenciesVm extends ChangeNotifier {
   final ExchangeRateBloc bloc;
+  SingletonDB db = SingletonDB();
 
   final Debouncer _debouncer = Debouncer();
   final REQUEST_DEBOUNCE_TIME = 750;
@@ -59,6 +62,18 @@ class ExchangeCurrenciesVm extends ChangeNotifier {
 
   void handleExchange() {
     _showExchangeSpinner = true;
+
+    ExchangeDbType exchangeToPersist = ExchangeDbType(
+        inputtedAmount: bloc.state.inputtedAmount,
+        fiatCurrencySymbol: bloc.state.fiatCurrency.symbol,
+        cryptoCurrencySymbol: bloc.state.cryptoCurrency.symbol,
+        exchangeType: bloc.state.exchangeType,
+        exchangeRate: bloc.state.exchangeRate);
+
+    db.insertRow(
+        tableName: db.EXCHANGE_HISTORY_TABLE_NAME,
+        tupleObject: exchangeToPersist);
+
     notifyListeners();
 
     int msToWait = 2500;
@@ -70,12 +85,8 @@ class ExchangeCurrenciesVm extends ChangeNotifier {
 
   String get exchangeAndSymbol {
     String formattedExchangeRate = formatDouble(bloc.state.exchangeRate);
-    String currencySymbol =
-        bloc.state.exchangeType == ExchangeTypeEnum.fiatCrypto
-            ? bloc.state.cryptoCurrency.symbol
-            : bloc.state.fiatCurrency.symbol;
 
-    return '= $formattedExchangeRate $currencySymbol';
+    return '= $formattedExchangeRate ${bloc.state.fiatCurrency.symbol}/${bloc.state.cryptoCurrency.symbol}';
   }
 
   String get receivedAmountAndSymbol {

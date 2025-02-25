@@ -2,7 +2,7 @@ import '../types/index.dart';
 import 'package:flutter/material.dart';
 
 const BACKGROUND_IMAGE_PATH = "assets/backgroundImage.jpeg";
-const EXCHANGE_CARD_WIDTH = 350.0;
+const CARD_WIDTH = 350.0;
 
 final List<Currency> FIAT_CURRENCIES = [
   Currency(
